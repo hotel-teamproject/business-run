@@ -1,0 +1,281 @@
+// Mock 데이터 - 로그인 테스트용 최소 데이터
+export const mockBusinessUser = {
+  id: 2,
+  name: "홍길동",
+  email: "business@hotel.com",
+  role: "business",
+  businessId: "biz_001",
+  businessName: "홍길동 호텔그룹",
+  businessNumber: "123-45-67890",
+  isApproved: true,
+};
+
+export const mockDashboardStats = {
+  todayBookings: 15,
+  totalRevenue: 12500000,
+  activeHotels: 45,
+  newUsers: 8,
+  chartData: {
+    labels: ["1월", "2월", "3월", "4월", "5월", "6월"],
+    revenue: [2000000, 2500000, 2200000, 2800000, 3000000, 3200000],
+    bookings: [45, 58, 52, 67, 72, 78],
+  },
+  recentBookings: [],
+  recentUsers: [],
+  recentReviews: [],
+};
+
+// 사업자 대시보드 통계
+export const mockBusinessDashboardStats = {
+  totalRevenue: 12500000,
+  monthlyRevenue: 3500000,
+  bookingCount: 45,
+  monthlyBookingCount: 12,
+  averageRating: 4.5,
+  reviewCount: 371,
+  occupancyRate: 78,
+  chartData: {
+    labels: ["1월", "2월", "3월", "4월", "5월", "6월"],
+    revenue: [2000000, 2500000, 2200000, 2800000, 3000000, 3500000],
+    bookings: [35, 42, 38, 45, 52, 45],
+  },
+  recentBookings: [
+    {
+      id: "res_001",
+      guestName: "김영희",
+      hotelName: "CVK Park Bosphorus Hotel",
+      roomName: "스위트룸",
+      checkIn: "2024-12-08",
+      checkOut: "2024-12-10",
+      totalPrice: 600000,
+      status: "completed",
+    },
+    {
+      id: "res_002",
+      guestName: "이철수",
+      hotelName: "CVK Park Bosphorus Hotel",
+      roomName: "디럭스룸",
+      checkIn: "2024-12-10",
+      checkOut: "2024-12-12",
+      totalPrice: 400000,
+      status: "pending",
+    },
+  ],
+  recentReviews: [
+    {
+      id: "rev_001",
+      userName: "김승연",
+      rating: 5,
+      content: "최고의 호텔이었습니다!",
+      hotelName: "CVK Park Bosphorus Hotel",
+      createdAt: "2024-11-10",
+    },
+  ],
+};
+
+// 사업자 호텔 목록
+export const mockBusinessHotels = [
+  {
+    _id: "hotel_001",
+    name: "CVK Park Bosphorus Hotel Istanbul",
+    nameEn: "CVK Park Bosphorus Hotel Istanbul",
+    address: "Gümüssuyu Mah. Inönü Cad. No:8, Istanbul 34437",
+    city: "Istanbul",
+    country: "Turkey",
+    starRating: 5,
+    type: "hotel",
+    averageRating: 4.2,
+    reviewCount: 371,
+    isApproved: true,
+    mainImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+    createdAt: "2024-01-15",
+    roomCount: 3,
+    bookingCount: 245,
+  },
+  {
+    _id: "hotel_002",
+    name: "서울 그랜드 호텔",
+    nameEn: "Seoul Grand Hotel",
+    address: "서울시 강남구 테헤란로 123",
+    city: "서울",
+    country: "대한민국",
+    starRating: 4,
+    type: "hotel",
+    averageRating: 4.5,
+    reviewCount: 128,
+    isApproved: true,
+    mainImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+    createdAt: "2024-03-20",
+    roomCount: 5,
+    bookingCount: 89,
+  },
+];
+
+// 객실 목록
+export const mockRooms = [
+  {
+    _id: "room_001",
+    hotelId: "hotel_001",
+    name: "스위트룸",
+    nameEn: "Suite Room",
+    roomSize: "45m²",
+    capacityMin: 2,
+    capacityMax: 4,
+    checkInTime: "15:00",
+    checkOutTime: "11:00",
+    basePrice: 300000,
+    totalRooms: 5,
+    mainImage: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304",
+    amenities: ["킹베드", "욕조", "발코니", "미니바"],
+    description: "넓고 쾌적한 스위트룸입니다.",
+  },
+  {
+    _id: "room_002",
+    hotelId: "hotel_001",
+    name: "디럭스룸",
+    nameEn: "Deluxe Room",
+    roomSize: "35m²",
+    capacityMin: 2,
+    capacityMax: 3,
+    checkInTime: "15:00",
+    checkOutTime: "11:00",
+    basePrice: 200000,
+    totalRooms: 10,
+    mainImage: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304",
+    amenities: ["더블베드", "샤워부스", "TV", "미니바"],
+    description: "편안한 디럭스룸입니다.",
+  },
+];
+
+// 사업자 예약 목록
+export const mockBusinessReservations = [
+  {
+    _id: "res_001",
+    reservationNumber: "RES-2024-001",
+    hotelId: "hotel_001",
+    hotelName: "CVK Park Bosphorus Hotel Istanbul",
+    roomId: "room_001",
+    roomName: "스위트룸",
+    guestName: "김영희",
+    guestEmail: "kim@example.com",
+    guestPhone: "010-1234-5678",
+    startDate: "2024-12-08",
+    endDate: "2024-12-10",
+    numAdult: 2,
+    numKid: 0,
+    basePrice: 600000,
+    taxes: 60000,
+    serviceFee: 12000,
+    discount: 0,
+    totalPrice: 672000,
+    status: "completed",
+    createdAt: "2024-11-15",
+    completedAt: "2024-11-15",
+  },
+  {
+    _id: "res_002",
+    reservationNumber: "RES-2024-002",
+    hotelId: "hotel_001",
+    hotelName: "CVK Park Bosphorus Hotel Istanbul",
+    roomId: "room_002",
+    roomName: "디럭스룸",
+    guestName: "이철수",
+    guestEmail: "lee@example.com",
+    guestPhone: "010-2345-6789",
+    startDate: "2024-12-10",
+    endDate: "2024-12-12",
+    numAdult: 2,
+    numKid: 1,
+    basePrice: 400000,
+    taxes: 40000,
+    serviceFee: 8000,
+    discount: 20000,
+    totalPrice: 428000,
+    status: "pending",
+    createdAt: "2024-11-20",
+  },
+];
+
+// 사업자 리뷰 목록
+export const mockBusinessReviews = [
+  {
+    _id: "rev_001",
+    hotelId: "hotel_001",
+    hotelName: "CVK Park Bosphorus Hotel Istanbul",
+    userId: "user_001",
+    userName: "김승연",
+    starRating: 5,
+    title: "최고의 호텔!",
+    content: "정말 좋은 경험이었습니다. 직원들도 친절하고 시설도 깨끗했습니다.",
+    images: [],
+    isVerified: true,
+    wroteOn: "2024-11-10",
+    createdAt: "2024-11-10",
+    reply: null,
+  },
+  {
+    _id: "rev_002",
+    hotelId: "hotel_001",
+    hotelName: "CVK Park Bosphorus Hotel Istanbul",
+    userId: "user_002",
+    userName: "이재성",
+    starRating: 4,
+    title: "만족스러운 숙박",
+    content: "가격 대비 만족스러웠습니다.",
+    images: [],
+    isVerified: true,
+    wroteOn: "2024-11-08",
+    createdAt: "2024-11-08",
+    reply: {
+      content: "감사합니다. 더 좋은 서비스로 보답하겠습니다.",
+      createdAt: "2024-11-09",
+    },
+  },
+];
+
+// 가격 정책 샘플
+export const mockPricePolicies = [
+  {
+    _id: "policy_001",
+    roomId: "room_001",
+    dateFrom: "2024-12-01",
+    dateTo: "2024-12-31",
+    weekdayPrice: 300000,
+    weekendPrice: 350000,
+    seasonType: "normal",
+  },
+  {
+    _id: "policy_002",
+    roomId: "room_001",
+    dateFrom: "2024-12-24",
+    dateTo: "2024-12-26",
+    weekdayPrice: 500000,
+    weekendPrice: 500000,
+    seasonType: "peak",
+  },
+];
+
+// 재고 정보 샘플
+export const mockInventory = [
+  {
+    date: "2024-12-08",
+    totalRooms: 5,
+    bookedRooms: 2,
+    availableRooms: 3,
+    status: "available",
+  },
+  {
+    date: "2024-12-09",
+    totalRooms: 5,
+    bookedRooms: 4,
+    availableRooms: 1,
+    status: "limited",
+  },
+  {
+    date: "2024-12-10",
+    totalRooms: 5,
+    bookedRooms: 5,
+    availableRooms: 0,
+    status: "soldout",
+  },
+];
