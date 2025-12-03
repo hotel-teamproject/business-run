@@ -1,0 +1,61 @@
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - app-network
+    environment:
+      MONGO_INITDB_DATABASE: business-back
+
+  # Backend (Express)
+  backend:
+    build:
+      context: ./business-back
+      dockerfile: Dockerfile
+    container_name: express-container
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - MONGODB_URI=mongodb://mongodb:27017/business-back
+      - JWT_SECRET=your-secret-key-here-change-in-production
+      - JWT_EXPIRE=7d
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+    # 개발 시 소스 코드 변경 반영을 원하면 아래 주석 해제
+    # volumes:
+    #   - ./business-back:/app
+    #   - /app/node_modules
+
+  # Frontend (React + Nginx)
+  frontend:
+    build:
+      context: ./business-front
+      dockerfile: Dockerfile
+    container_name: react-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mongodb-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
+
