@@ -3,6 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+// 환경변수 확인 (디버깅용)
+console.log('환경변수 확인:');
+console.log('  - PORT:', process.env.PORT);
+console.log('  - MONGO_URI:', process.env.MONGO_URI ? '설정됨' : '설정 안됨');
+console.log('  - JWT_SECRET:', process.env.JWT_SECRET ? '설정됨' : '⚠️ 설정 안됨!');
+console.log('  - JWT_EXPIRE:', process.env.JWT_EXPIRE || '7d (기본값)');
+console.log('  - NODE_ENV:', process.env.NODE_ENV || 'development');
+
 // 기능별 라우트 임포트
 const dashboardRoutes = require('./dashboard/dashboardRoutes');
 const hotelRoutes = require('./hotels/hotelRoutes');
@@ -29,7 +37,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB 연결
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/business-back', {
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/hotel-business';
+mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })

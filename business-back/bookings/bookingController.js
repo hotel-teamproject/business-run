@@ -4,12 +4,21 @@ const Hotel = require('../hotels/Hotel');
 exports.getMyReservations = async (req, res) => {
   try {
     const userId = req.user._id;
+    const { status } = req.query; // 필터링 파라미터
     
     // 내 호텔 ID 목록 조회
     const myHotels = await Hotel.find({ ownerId: userId }).select('_id');
     const hotelIds = myHotels.map(h => h._id);
     
-    const bookings = await Booking.find({ hotelId: { $in: hotelIds } })
+    // 필터 조건 구성
+    const filter = { hotelId: { $in: hotelIds } };
+    
+    // status 필터가 있으면 추가
+    if (status && status !== 'all') {
+      filter.status = status;
+    }
+    
+    const bookings = await Booking.find(filter)
       .populate('hotelId', 'name')
       .populate('roomId', 'name type')
       .sort({ createdAt: -1 });
@@ -36,7 +45,8 @@ exports.getMyReservations = async (req, res) => {
     // 프런트 BusinessReservationListPage 에서 data.reservations 로 사용
     res.json({ reservations });
   } catch (error) {
-    res.status(500).json({ message: '예약 목록 조회 실패', error });
+    console.error('예약 목록 조회 에러:', error);
+    res.status(500).json({ message: '예약 목록 조회 실패', error: error.message });
   }
 };
 

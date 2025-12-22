@@ -22,6 +22,8 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log('로그인 시도:', { email, hasPassword: !!password });
+
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -29,7 +31,9 @@ exports.login = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    // password 필드를 명시적으로 선택 (select: false가 설정되어 있을 수 있음)
+    const user = await User.findOne({ email }).select('+password');
+    console.log('사용자 조회 결과:', user ? { id: user._id, email: user.email, role: user.role, isActive: user.isActive, hasPassword: !!user.password } : '없음');
 
     if (!user) {
       return res.status(401).json({
@@ -53,7 +57,31 @@ exports.login = async (req, res) => {
       });
     }
 
+    // JWT_SECRET 확인
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET이 설정되지 않았습니다!');
+      return res.status(500).json({
+        success: false,
+        message: '서버 설정 오류가 발생했습니다.',
+      });
+    }
+
+    // 디버깅: 비밀번호 비교 전 정보 확인
+    console.log('비밀번호 비교 전:');
+    console.log('  - 입력한 비밀번호:', password);
+    console.log('  - DB에 저장된 해시:', user.password ? user.password.substring(0, 20) + '...' : '없음');
+    console.log('  - 해시 길이:', user.password ? user.password.length : 0);
+    
     const isMatch = await user.comparePassword(password);
+    console.log('비밀번호 비교 결과:', isMatch);
+    
+    // 비교 실패 시 추가 디버깅
+    if (!isMatch) {
+      const bcrypt = require('bcryptjs');
+      const directCompare = await bcrypt.compare(password, user.password);
+      console.log('직접 bcrypt.compare 결과:', directCompare);
+      console.log('해시값 전체:', user.password);
+    }
 
     if (!isMatch) {
       return res.status(401).json({
@@ -64,6 +92,7 @@ exports.login = async (req, res) => {
 
     const token = generateToken(user);
     const sanitized = sanitizeUser(user);
+    console.log('로그인 성공:', { userId: user._id, email: user.email, hasToken: !!token });
 
     // 프런트엔드 business-front의 기대 응답 형태에 맞춤
     // - 사업자 로그인: { token, user }
@@ -76,10 +105,24 @@ exports.login = async (req, res) => {
       });
     }
 
-    // 기본(사업자) 응답
+    // 기본(사업자) 응답 - 프론트엔드 형식에 맞게 변환
+    // 사업자명과 사업장 주소는 호텔 정보에서 가져옴 (로그인 시에는 첫 번째 호텔 사용)
+    const Hotel = require('../hotels/Hotel');
+    const firstHotel = await Hotel.findOne({ ownerId: user._id }).select('name address').lean();
+    
+    const formattedUser = {
+      ...sanitized,
+      businessName: firstHotel?.name || '',      // 호텔 이름 → businessName (사업자명)
+      ownerName: sanitized.name,                 // name → ownerName (대표자 이름)
+      businessPhone: sanitized.phone,           // phone → businessPhone (사업자 연락처)
+      businessAddress: firstHotel?.address || '', // 호텔 주소 → businessAddress (사업장 주소)
+      businessEmail: sanitized.email,            // email → businessEmail (호환성)
+      isApproved: sanitized.isActive,            // isActive → isApproved (호환성)
+    };
+
     return res.json({
       token,
-      user: sanitized,
+      user: formattedUser,
     });
   } catch (error) {
     console.error('login error:', error);
@@ -111,8 +154,26 @@ exports.getMyInfo = async (req, res) => {
       });
     }
 
-    // 프런트에서는 순수 유저 객체를 기대하므로 래핑 없이 그대로 반환
-    return res.json(sanitizeUser(req.user));
+    const user = sanitizeUser(req.user);
+    
+    // 사업자명은 사용자의 첫 번째 호텔 이름에서 가져옴
+    const Hotel = require('../hotels/Hotel');
+    const firstHotel = await Hotel.findOne({ ownerId: user._id }).select('name address').lean();
+    
+    // 프론트엔드가 기대하는 형식으로 변환
+    // name 필드는 대표자 이름으로 사용
+    // businessName은 호텔 이름에서 가져옴 (없으면 빈 문자열)
+    const formattedUser = {
+      ...user,
+      businessName: firstHotel?.name || '',  // 호텔 이름 → businessName (사업자명)
+      ownerName: user.name,                  // name → ownerName (대표자 이름)
+      businessPhone: user.phone,             // phone → businessPhone (사업자 연락처)
+      businessAddress: firstHotel?.address || '',  // 호텔 주소 → businessAddress (사업장 주소)
+      businessEmail: user.email,             // email → businessEmail (호환성)
+      isApproved: user.isActive,             // isActive → isApproved (호환성)
+    };
+
+    return res.json(formattedUser);
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -199,6 +260,88 @@ exports.forgotPassword = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: '비밀번호 재설정 요청 처리 중 오류가 발생했습니다.',
+      error: error.message,
+    });
+  }
+};
+
+// POST /business/auth/apply - 사업자 신청 (회원가입)
+exports.applyBusiness = async (req, res) => {
+  try {
+    const { email, password, name, businessNumber, phone } = req.body;
+
+    // 필수 필드 검증
+    if (!email || !password || !name || !businessNumber || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: '모든 필수 필드를 입력해주세요.',
+      });
+    }
+
+    // 비밀번호 길이 검증
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: '비밀번호는 최소 6자 이상이어야 합니다.',
+      });
+    }
+
+    // 이메일 중복 확인
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: '이미 등록된 이메일입니다.',
+      });
+    }
+
+    // 사업자 번호 중복 확인
+    const existingBusinessNumber = await User.findOne({ businessNumber });
+    if (existingBusinessNumber) {
+      return res.status(400).json({
+        success: false,
+        message: '이미 등록된 사업자 번호입니다.',
+      });
+    }
+
+    // 새 사용자 생성
+    const newUser = new User({
+      email,
+      password, // pre('save') 훅에서 자동 해싱
+      name,
+      businessNumber,
+      phone,
+      role: 'business',
+      isActive: true,
+    });
+
+    await newUser.save();
+
+    // JWT 토큰 생성
+    const token = generateToken(newUser);
+    const sanitized = sanitizeUser(newUser);
+
+    return res.status(201).json({
+      success: true,
+      message: '사업자 신청이 완료되었습니다.',
+      token,
+      user: sanitized,
+    });
+  } catch (error) {
+    console.error('applyBusiness error:', error);
+    
+    // MongoDB 중복 키 에러 처리
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({
+        success: false,
+        message: `이미 등록된 ${field === 'email' ? '이메일' : '사업자 번호'}입니다.`,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: '사업자 신청 처리 중 오류가 발생했습니다.',
       error: error.message,
     });
   }

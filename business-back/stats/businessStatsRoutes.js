@@ -7,6 +7,7 @@ const businessStatsController = require('./businessStatsController');
 router.use(verifyToken, authorize('business'));
 
 router.get('/', businessStatsController.getStatistics);
+router.get('/revenue/chart', businessStatsController.getRevenueChart);
 
 module.exports = router;
 

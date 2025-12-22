@@ -10,6 +10,7 @@ const BusinessReservationDetailPage = () => {
   const navigate = useNavigate();
   const [reservation, setReservation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -33,6 +34,28 @@ const BusinessReservationDetailPage = () => {
       style: "currency",
       currency: "KRW",
     }).format(amount);
+  };
+
+  const handleCancel = async () => {
+    const reason = prompt("예약 취소 사유를 입력해주세요:");
+    if (!reason || reason.trim() === "") {
+      return;
+    }
+
+    if (!window.confirm("정말 예약을 취소하시겠습니까?\n\n취소된 예약은 복구할 수 없습니다.")) {
+      return;
+    }
+
+    setCancelling(true);
+    try {
+      await businessReservationApi.cancelReservation(reservationId, reason);
+      alert("예약이 취소되었습니다.");
+      fetchReservation(); // 예약 정보 새로고침
+    } catch (err) {
+      alert(err.message || "예약 취소에 실패했습니다.");
+    } finally {
+      setCancelling(false);
+    }
   };
 
   if (loading) return <Loader fullScreen />;
@@ -135,6 +158,19 @@ const BusinessReservationDetailPage = () => {
             </div>
           </div>
         </div>
+
+        {/* 예약 취소 버튼 */}
+        {reservation.status !== "cancelled" && reservation.status !== "completed" && (
+          <div className="detail-actions">
+            <button
+              className="btn btn-danger"
+              onClick={handleCancel}
+              disabled={cancelling}
+            >
+              {cancelling ? "처리 중..." : "예약 취소"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

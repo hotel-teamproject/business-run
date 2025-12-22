@@ -11,7 +11,7 @@ services:
     networks:
       - app-network
     environment:
-      MONGO_INITDB_DATABASE: business-back
+      MONGO_INITDB_DATABASE: hotel-business
 
   # Backend (Express)
   backend:
@@ -24,7 +24,7 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
-      - MONGODB_URI=mongodb://mongodb:27017/business-back
+      - MONGO_URI=mongodb://mongodb:27017/hotel-business
       - JWT_SECRET=your-secret-key-here-change-in-production
       - JWT_EXPIRE=7d
       - NODE_ENV=production

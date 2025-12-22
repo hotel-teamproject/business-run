@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "./variables.scss" as *;
 
 // 사업자 레이아웃 스타일
@@ -195,6 +196,113 @@
   }
 }
 
+// 최근 테이블 스타일
+.business-recent-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: $spacing-xl;
+  margin-bottom: $spacing-xl;
+
+  .recent-section {
+    background-color: $bg-primary;
+    border-radius: $border-radius;
+    box-shadow: $shadow-sm;
+    padding: $spacing-xl;
+    border: 1px solid $border-color;
+
+    h3 {
+      font-size: $font-size-xl;
+      font-weight: 700;
+      color: $text-primary;
+      margin: 0 0 $spacing-lg 0;
+      padding-bottom: $spacing-md;
+      border-bottom: 2px solid $border-color;
+    }
+
+    .empty-message {
+      color: $text-secondary;
+      text-align: center;
+      padding: $spacing-xl;
+      font-size: $font-size-base;
+    }
+
+    .section-footer {
+      margin-top: $spacing-lg;
+      padding-top: $spacing-lg;
+      border-top: 1px solid $border-color;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    // 리뷰 리스트 스타일
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+
+      .review-item {
+        background-color: $bg-secondary;
+        border-radius: $border-radius;
+        padding: $spacing-lg;
+        border: 1px solid $border-color;
+        transition: $transition-base;
+
+        &:hover {
+          box-shadow: $shadow-sm;
+          border-color: rgba($primary-color, 0.2);
+        }
+
+        .review-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: $spacing-md;
+          flex-wrap: wrap;
+          gap: $spacing-sm;
+
+          .review-user {
+            font-weight: 600;
+            color: $text-primary;
+            font-size: $font-size-base;
+          }
+
+          .review-rating {
+            font-size: $font-size-base;
+            color: #fbbf24;
+            letter-spacing: 2px;
+          }
+
+          .review-date {
+            color: $text-secondary;
+            font-size: $font-size-sm;
+          }
+        }
+
+        .review-content {
+          color: $text-primary;
+          font-size: $font-size-base;
+          line-height: 1.6;
+          margin-bottom: $spacing-md;
+          word-break: break-word;
+        }
+
+        .review-hotel {
+          color: $text-secondary;
+          font-size: $font-size-sm;
+          background-color: rgba($primary-color, 0.1);
+          padding: $spacing-xs $spacing-sm;
+          border-radius: 6px;
+          display: inline-block;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .business-chart-area {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -208,8 +316,13 @@
     box-shadow: $shadow-sm;
 
     h3 {
-      margin-top: 0;
-      margin-bottom: $spacing-lg;
+      font-size: $font-size-xl;
+      font-weight: 700;
+      color: $text-primary;
+      margin: 0 0 $spacing-lg 0;
+      margin-bottom: $spacing-2xl;
+      padding-bottom: $spacing-md;
+      border-bottom: 2px solid $border-color;
     }
 
     .simple-chart {
@@ -217,13 +330,19 @@
       align-items: flex-end;
       gap: $spacing-md;
       height: 200px;
+      justify-content: center; // 중앙 정렬
 
       .chart-bar-container {
-        flex: 1;
+        flex: 0 0 calc((100% - (5 * #{$spacing-md})) / 6); // 최대 6개 기준 고정 너비
+        max-width: calc((100% - (5 * #{$spacing-md})) / 6);
         display: flex;
         flex-direction: column;
         align-items: center;
         height: 100%;
+        
+        &.chart-bar-empty {
+          opacity: 0.3; // 빈 막대는 약간 투명하게
+        }
 
         .chart-bar-wrapper {
           flex: 1;
@@ -262,7 +381,7 @@
 // 필터 섹션 스타일 (현대적인 세그먼트 컨트롤)
 .filter-section {
   display: inline-flex;
-  background-color: $bg-secondary;
+  background-color: color.scale($primary-color, $lightness: 80%); // 상세보기 버튼과 동일한 배경색
   border-radius: 12px;
   padding: 4px;
   gap: 4px;
@@ -312,14 +431,15 @@
   box-shadow: $shadow-sm;
 
   thead {
-    background-color: $bg-secondary;
+    background-color: $primary-color !important; // Primary color를 배경으로 사용하여 명확히 구분
 
     th {
       padding: $spacing-md;
       text-align: left;
       font-weight: 600;
-      color: $text-primary;
-      border-bottom: 1px solid $border-color;
+      color: $text-white !important; // 흰색 텍스트로 대비 강화
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important; // 연한 흰색 테두리
+      background-color: $primary-color !important; // th에도 배경색 명시적으로 적용
     }
   }
 
@@ -338,6 +458,18 @@
       td {
         padding: $spacing-md;
         color: $text-primary;
+
+        // 상세보기 버튼 스타일 (회원가입 버튼과 동일한 색상)
+        .btn-primary {
+          background: color.scale($primary-color, $lightness: 80%) !important;
+          color: $primary-color !important;
+          border-color: color.scale($primary-color, $lightness: 80%) !important;
+
+          &:hover:not(:disabled) {
+            background: color.scale($primary-color, $lightness: 70%) !important;
+            border-color: color.scale($primary-color, $lightness: 70%) !important;
+          }
+        }
       }
     }
   }
@@ -387,14 +519,36 @@
 
   .amenities-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: $spacing-md;
+    align-items: start;
 
     .checkbox-label {
       display: flex;
       align-items: center;
-      gap: $spacing-sm;
+      gap: $spacing-xs;
       cursor: pointer;
+      text-align: left;
+      justify-content: flex-start;
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        margin: 0;
+        padding: 0;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+
+      span {
+        flex: 1;
+        text-align: left;
+        line-height: 1.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 
@@ -1303,6 +1457,10 @@
   font-weight: 500;
   cursor: pointer;
   transition: $transition-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 
   &.btn-primary {
     background-color: $primary-color;
@@ -1400,26 +1558,108 @@
 
     .auth-form {
       .form-group {
-        margin-bottom: $spacing-lg;
+        margin-bottom: 2rem;
+        position: relative;
 
         label {
-          display: block;
-          margin-bottom: $spacing-sm;
-          font-weight: 500;
+          position: absolute;
+          top: -0.7rem;
+          left: 1rem;
+          padding: 0 0.5rem;
+          background-color: $bg-primary;
+          font-weight: 600;
+          font-size: $font-size-sm;
+          color: $text-primary;
+          z-index: 1;
+          pointer-events: none;
         }
 
         input {
           width: 100%;
-          padding: $spacing-md;
-          border: 1px solid $border-color;
+          padding: 1.2rem 1.4rem;
+          border: 1.5px solid $border-color;
           border-radius: $border-radius;
           background-color: $bg-primary;
           color: $text-primary;
+          font-size: $font-size-base;
+          transition: all 0.2s ease;
+
+          &::placeholder {
+            color: $text-muted;
+            font-size: $font-size-sm;
+          }
 
           &:focus {
             outline: none;
             border-color: $primary-color;
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+
+            ~ label {
+              color: $primary-color;
+            }
           }
+
+          &:disabled {
+            background-color: $bg-secondary;
+            cursor: not-allowed;
+            opacity: 0.6;
+          }
+        }
+
+        .password-input-wrapper {
+          position: relative;
+
+          input {
+            padding-right: 4rem;
+          }
+
+          .password-toggle {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: $text-secondary;
+            font-size: 1.8rem;
+            padding: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+            z-index: 2;
+
+            &:hover {
+              color: $primary-color;
+            }
+          }
+        }
+      }
+    }
+
+    .auth-footer {
+      margin-top: $spacing-xl;
+      text-align: center;
+      padding-top: $spacing-lg;
+      border-top: 1px solid $border-color;
+
+      p {
+        color: $text-secondary;
+        font-size: $font-size-sm;
+      }
+
+      .link-button {
+        background: none;
+        border: none;
+        color: $primary-color;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: none;
+        
+        &:hover {
+          text-decoration: underline;
         }
       }
     }

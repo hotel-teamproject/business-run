@@ -20,6 +20,7 @@ const BusinessHotelCreatePage = () => {
     description: "",
     descriptionEn: "",
     amenities: [],
+    images: [], // 이미지 URL 배열
     checkInTime: "15:00",
     checkOutTime: "11:00",
   });
@@ -35,6 +36,23 @@ const BusinessHotelCreatePage = () => {
       amenities: prev.amenities.includes(amenity)
         ? prev.amenities.filter((a) => a !== amenity)
         : [...prev.amenities, amenity],
+    }));
+  };
+
+  const handleImageAdd = () => {
+    const url = prompt("이미지 URL을 입력해주세요:");
+    if (url && url.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, url.trim()],
+      }));
+    }
+  };
+
+  const handleImageRemove = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
     }));
   };
 
@@ -225,6 +243,35 @@ const BusinessHotelCreatePage = () => {
                 rows={5}
                 required
               />
+            </div>
+            <div className="form-group">
+              <label>호텔 이미지</label>
+              <div className="image-input-section">
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={handleImageAdd}
+                >
+                  + 이미지 추가
+                </button>
+                {formData.images.length > 0 && (
+                  <div className="image-list">
+                    {formData.images.map((imageUrl, index) => (
+                      <div key={index} className="image-item">
+                        <img src={imageUrl} alt={`호텔 이미지 ${index + 1}`} onError={(e) => e.target.style.display = 'none'} />
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleImageRemove(index)}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="form-hint">이미지 URL을 입력하세요 (예: https://example.com/image.jpg)</p>
+              </div>
             </div>
             <div className="form-group">
               <label>편의시설 *</label>

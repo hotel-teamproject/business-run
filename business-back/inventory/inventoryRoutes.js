@@ -12,6 +12,8 @@ router.get('/rooms/:roomId/inventory', inventoryController.getInventory);
 router.put('/rooms/:roomId/inventory/:date', inventoryController.updateInventory);
 // POST /api/business/rooms/:roomId/pricing
 router.post('/rooms/:roomId/pricing', inventoryController.setPricePolicy);
+// GET  /api/business/rooms/:roomId/pricing
+router.get('/rooms/:roomId/pricing', inventoryController.getPricePolicy);
 
 module.exports = router;
 

@@ -15,6 +15,8 @@ router.post('/hotels/:hotelId/rooms', roomController.createRoom);
 router.get('/rooms/:roomId', roomController.getRoomById);
 // PUT  /api/business/rooms/:roomId
 router.put('/rooms/:roomId', roomController.updateRoom);
+// DELETE /api/business/rooms/:roomId
+router.delete('/rooms/:roomId', roomController.deleteRoom);
 
 module.exports = router;
 

@@ -17,7 +17,9 @@ import BusinessReviewListPage from "../pages/business/BusinessReviewListPage";
 import BusinessReviewDetailPage from "../pages/business/BusinessReviewDetailPage";
 import BusinessStatisticsPage from "../pages/business/BusinessStatisticsPage";
 import BusinessSettlementPage from "../pages/business/BusinessSettlementPage";
+import BusinessSettlementDetailPage from "../pages/business/BusinessSettlementDetailPage";
 import BusinessProfilePage from "../pages/business/BusinessProfilePage";
+import BusinessChangePasswordPage from "../pages/business/BusinessChangePasswordPage";
 
 const businessRoutes = [
   {
@@ -97,8 +99,16 @@ const businessRoutes = [
         element: <BusinessSettlementPage />,
       },
       {
+        path: "settlements/:settlementId",
+        element: <BusinessSettlementDetailPage />,
+      },
+      {
         path: "profile",
         element: <BusinessProfilePage />,
+      },
+      {
+        path: "change-password",
+        element: <BusinessChangePasswordPage />,
       },
     ],
   },

@@ -9,6 +9,7 @@ router.use(verifyToken, authorize('business'));
 router.get('/', bookingController.getMyReservations);
 router.get('/:id', bookingController.getReservationById);
 router.put('/:id/status', bookingController.updateReservationStatus);
+router.post('/:id/cancel', bookingController.cancelReservation);
 
 module.exports = router;
 

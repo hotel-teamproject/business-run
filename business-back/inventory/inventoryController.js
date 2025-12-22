@@ -117,3 +117,52 @@ exports.setPricePolicy = async (req, res) => {
   }
 };
 
+exports.getPricePolicy = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const userId = req.user._id;
+    const { startDate, endDate } = req.query;
+    
+    // 객실 소유권 확인
+    const room = await Room.findById(roomId).populate('hotelId');
+    if (!room) {
+      return res.status(404).json({ message: '객실을 찾을 수 없습니다.' });
+    }
+    
+    const hotel = await Hotel.findOne({ _id: room.hotelId._id, ownerId: userId });
+    if (!hotel) {
+      return res.status(403).json({ message: '접근 권한이 없습니다.' });
+    }
+    
+    // 가격 정책 조회 (priceOverride가 설정된 재고 정보)
+    const query = { room: roomId };
+    if (startDate || endDate) {
+      query.date = {};
+      if (startDate) query.date.$gte = new Date(startDate);
+      if (endDate) query.date.$lte = new Date(endDate);
+    }
+    
+    // priceOverride가 있는 항목만 조회
+    query.priceOverride = { $exists: true, $ne: null };
+    
+    const pricePolicies = await Inventory.find(query)
+      .select('date priceOverride')
+      .sort({ date: 1 })
+      .lean();
+    
+    // 프론트엔드가 기대하는 형태로 변환
+    const policies = pricePolicies.map(policy => ({
+      date: policy.date ? policy.date.toISOString().split('T')[0] : '',
+      priceOverride: policy.priceOverride
+    }));
+    
+    res.json({ 
+      roomId,
+      policies,
+      basePrice: room.basePrice || room.price || 0
+    });
+  } catch (error) {
+    res.status(500).json({ message: '가격 정책 조회 실패', error: error.message });
+  }
+};
+

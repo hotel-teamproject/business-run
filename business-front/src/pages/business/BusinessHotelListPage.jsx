@@ -68,7 +68,13 @@ const BusinessHotelListPage = () => {
           {hotels.map((hotel) => (
             <div key={hotel._id} className="hotel-card">
               <div className="hotel-image">
-                <img src={hotel.mainImage || "/placeholder-hotel.jpg"} alt={hotel.name} />
+                <img 
+                  src={hotel.mainImage || "/placeholder-hotel.jpg"} 
+                  alt={hotel.name}
+                  onError={(e) => {
+                    e.target.src = "/placeholder-hotel.jpg";
+                  }}
+                />
                 <StatusBadge
                   status={hotel.isApproved ? "approved" : "pending"}
                   label={hotel.isApproved ? "승인됨" : "승인 대기"}
@@ -78,9 +84,9 @@ const BusinessHotelListPage = () => {
                 <h3>{hotel.name}</h3>
                 <p className="hotel-address">{hotel.address}</p>
                 <div className="hotel-stats">
-                  <span>⭐ {(hotel.averageRating || 0).toFixed(1)}</span>
-                  <span>📝 리뷰 {hotel.reviewCount || 0}개</span>
-                  <span>🛏 객실 {hotel.roomCount || 0}개</span>
+                  <span>⭐ {hotel.averageRating.toFixed(1)}</span>
+                  <span>📝 리뷰 {hotel.reviewCount}개</span>
+                  <span>🛏 객실 {hotel.roomCount}개</span>
                 </div>
                 <div className="hotel-actions">
                   <button

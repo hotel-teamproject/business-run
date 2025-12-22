@@ -34,6 +34,20 @@ const BusinessRoomManagePage = () => {
     }).format(amount);
   };
 
+  const handleDelete = async (roomId, roomName) => {
+    if (!window.confirm(`정말 "${roomName}" 객실을 삭제하시겠습니까?\n\n예약이 있는 객실은 삭제할 수 없습니다.`)) {
+      return;
+    }
+
+    try {
+      await businessRoomApi.deleteRoom(roomId);
+      alert("객실이 삭제되었습니다.");
+      fetchRooms();
+    } catch (err) {
+      alert(err.message || "객실 삭제에 실패했습니다.");
+    }
+  };
+
   if (loading) return <Loader fullScreen />;
   if (error) return <ErrorMessage message={error} onRetry={fetchRooms} />;
 
@@ -70,7 +84,13 @@ const BusinessRoomManagePage = () => {
           {rooms.map((room) => (
             <div key={room._id} className="room-card">
               <div className="room-image">
-                <img src={room.mainImage || "/placeholder-room.jpg"} alt={room.name} />
+                <img 
+                  src={room.mainImage || "/placeholder-room.jpg"} 
+                  alt={room.name}
+                  onError={(e) => {
+                    e.target.src = "/placeholder-room.jpg";
+                  }}
+                />
               </div>
               <div className="room-info">
                 <h3>{room.name}</h3>
@@ -105,6 +125,12 @@ const BusinessRoomManagePage = () => {
                     }
                   >
                     재고 관리
+                  </button>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(room._id, room.name)}
+                  >
+                    삭제
                   </button>
                 </div>
               </div>

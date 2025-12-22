@@ -24,3 +24,35 @@ exports.getSettlements = async (req, res) => {
   }
 };
 
+exports.getSettlementById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    
+    const settlement = await Settlement.findById(id);
+    
+    if (!settlement) {
+      return res.status(404).json({ 
+        success: false,
+        message: '정산 내역을 찾을 수 없습니다.' 
+      });
+    }
+    
+    // 정산 내역 소유권 확인
+    if (settlement.businessUser.toString() !== userId.toString()) {
+      return res.status(403).json({ 
+        success: false,
+        message: '접근 권한이 없습니다.' 
+      });
+    }
+    
+    res.json(settlement);
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      message: '정산 내역 조회 실패', 
+      error: error.message 
+    });
+  }
+};
+

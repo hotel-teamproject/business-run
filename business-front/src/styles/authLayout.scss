@@ -1,0 +1,736 @@
+@use "sass:color";
+@use "./variables.scss" as *;
+
+/* ================================
+   AUTH LAYOUT
+================================== */
+.auth-layout-page {
+  height: 100vh;
+  overflow: hidden;
+  background: $bg-secondary;
+
+  .auth-layout-container {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .auth-layout-content {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    animation: slideInFromLeft 0.6s ease-out;
+
+    /* 회원가입 페이지: 이미지 왼쪽, 폼 오른쪽 */
+    &.auth-layout-content-reverse {
+      flex-direction: row-reverse;
+      animation: slideInFromRight 0.6s ease-out;
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+
+      &.auth-layout-content-reverse {
+        flex-direction: column;
+      }
+
+      .auth-layout-image-section {
+        display: none;
+      }
+    }
+  }
+
+  .auth-layout-form-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 3rem !important;
+    background: $bg-primary;
+    overflow-y: auto;
+
+    @media (max-width: 768px) {
+      padding: 1.5rem 1.5rem !important;
+    }
+  }
+
+  .auth-layout-image-section {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    overflow: hidden;
+
+    /* 배경 이미지 - 전체 영역 채움 (블러 없음) */
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=1200&fit=crop");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+      display: block;
+    }
+  }
+}
+
+/* ================================
+   AUTH IMAGE SECTION
+================================== */
+.auth-image-section {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  position: relative;
+  z-index: 1;
+
+  /* 카드 형태의 이미지 (선명) */
+  .auth-image-wrapper {
+    width: calc(100% - 6px);
+    max-width: none;
+    min-width: 0;
+    aspect-ratio: 9 / 16;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    /* 테두리 블러 효과 - 약간의 블러로 경계를 부드럽게 */
+    filter: blur(0.3px);
+    z-index: 1;
+
+    /* 이미지는 선명하게 유지 */
+    .auth-image {
+      filter: blur(0);
+    }
+
+    @media (max-width: 768px) {
+      width: calc(100% - 6px);
+      max-width: none;
+    }
+
+    .auth-image-placeholder {
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.1);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .auth-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ================================
+   FORM STYLE
+================================== */
+.common-form {
+  width: 100%;
+  max-width: 46rem;
+  padding: 0;
+
+  .form-header,
+  .payment-header {
+    margin-bottom: $spacing-xl;
+    text-align: left;
+
+    .back-button {
+      background: none;
+      border: none;
+      font-size: $font-size-sm;
+      color: $text-secondary;
+      cursor: pointer;
+      margin-bottom: $spacing-lg;
+      padding: 0;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+
+    .form-title {
+      font-size: $font-size-2xl;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: $spacing-xs;
+      line-height: 1.2;
+    }
+
+    .form-subtitle {
+      font-size: $font-size-sm;
+      color: $text-secondary;
+      line-height: 1.5;
+    }
+  }
+
+  .form-content {
+    /* ERROR */
+    .error-message {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid #fecaca;
+      margin-bottom: 1rem;
+      font-size: $font-size-sm;
+    }
+
+    /* GROUP */
+    .form-group {
+      margin-bottom: 1.6rem;
+      position: relative;
+
+      .form-label {
+        position: absolute;
+        top: -0.7rem;
+        left: 1.2rem;
+        padding: 0 0.6rem;
+        background-color: $bg-primary;
+        font-size: 12px;
+        font-weight: 600;
+        color: $text-primary;
+        z-index: 1;
+        pointer-events: none;
+        letter-spacing: 0.01em;
+      }
+
+      .form-input,
+      input {
+        width: 100%;
+        padding: 1.3rem 1.4rem;
+        border: 1.5px solid $border-color !important;
+        border-radius: 8px;
+        font-size: 15px;
+        background: $bg-primary;
+        color: $text-primary;
+        transition: all 0.2s ease;
+
+        &::placeholder {
+          color: $text-muted;
+          font-size: 15px;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: $primary-color !important;
+          box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+
+          ~ .form-label {
+            color: $primary-color;
+          }
+        }
+
+        &:disabled {
+          background: $bg-secondary;
+          color: $text-muted;
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+      }
+
+      .password-input-wrapper {
+        position: relative;
+
+        input {
+          padding-right: 4rem;
+        }
+
+        .password-toggle {
+          position: absolute;
+          right: 1.2rem;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: $text-secondary;
+          padding: 0.4rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.2s ease;
+          z-index: 2;
+
+          svg {
+            width: 18px;
+            height: 18px;
+          }
+
+          &:hover {
+            color: $primary-color;
+          }
+        }
+      }
+    }
+
+    /* OPTIONS */
+    .form-options {
+      margin-top: $spacing-lg;
+      margin-bottom: $spacing-md;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+
+        input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          appearance: none;
+          -webkit-appearance: none;
+          border: 1.5px solid $text-primary;
+          background-color: $bg-primary;
+          border-radius: 3px;
+          cursor: pointer;
+          position: relative;
+          transition: all 0.2s ease;
+
+          &:checked {
+            background-color: $primary-color;
+            border-color: $primary-color;
+            accent-color: $primary-color;
+            
+            &::after {
+              content: "✓";
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              color: white;
+              font-size: 12px;
+              font-weight: bold;
+            }
+          }
+        }
+
+        .checkbox-label {
+          font-size: $font-size-sm;
+          color: $text-primary;
+          user-select: none;
+        }
+      }
+
+      .forgot-password {
+        font-size: 1.4rem;
+        color: $primary-color;
+        text-decoration: none;
+        transition: text-decoration 0.2s ease;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    /* BUTTONS */
+    .btn {
+      width: 100%;
+      height: 48px !important;
+      border-radius: 8px;
+      font-size: $font-size-base;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      margin-top: $spacing-lg;
+      transition: all 0.2s ease;
+
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+
+      line-height: normal !important;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    .btn--primary {
+      background: $primary-color !important;
+      color: #fff;
+      border-color: $primary-color !important;
+
+      &:hover:not(:disabled) {
+        background: color.scale($primary-color, $lightness: -10%) !important;
+        border-color: color.scale($primary-color, $lightness: -10%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+    }
+
+    .btn--accent {
+      background: color.scale($primary-color, $lightness: 80%) !important;
+      color: $primary-color;
+      border-color: color.scale($primary-color, $lightness: 80%) !important;
+
+      &:hover:not(:disabled) {
+        background: color.scale($primary-color, $lightness: 70%) !important;
+        border-color: color.scale($primary-color, $lightness: 70%) !important;
+      }
+    }
+
+    .btn--outline {
+      background: #fff;
+      color: $primary-color;
+      border-color: $primary-color !important;
+
+      &:hover:not(:disabled) {
+        background: color.scale($primary-color, $lightness: 95%);
+      }
+    }
+
+    .btn--block {
+      width: 100%;
+    }
+
+    /* ⭐ 2분할 버튼 */
+    .signup-dual-buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 1.6rem;
+
+      .btn {
+        flex: 1;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        height: 50px !important;
+        line-height: 50px !important;
+      }
+    }
+
+    /* DIVIDER */
+    .divider {
+      margin: 1.6rem 0;
+      text-align: center;
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 1px;
+        background: $border-color;
+      }
+
+      .divider-text {
+        background: $bg-primary;
+        padding: 0 0.8rem;
+        color: $text-secondary;
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+      }
+    }
+
+    /* SOCIAL */
+    .social-login {
+      text-align: center;
+      margin-top: $spacing-lg;
+
+      .social-login-text {
+        color: $text-secondary;
+        margin-bottom: 1rem;
+        font-size: $font-size-sm;
+      }
+
+      .social-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+
+        .btn--social {
+          width: 44px;
+          height: 44px;
+          background: $bg-primary;
+          border: 1px solid $border-color;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: $bg-secondary;
+            transform: scale(1.1);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* LOGIN FORM 특수 스타일 */
+.login-form {
+  max-width: 42rem;
+  width: 100%;
+  
+  .form-header {
+    margin-bottom: 1.6rem;
+    
+    .form-title {
+      font-size: 34px;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      line-height: 1.2;
+    }
+
+    .form-subtitle {
+      font-size: 12px;
+      color: $text-secondary;
+      line-height: 1.5;
+    }
+  }
+
+  .sample-account-info {
+    background: rgba($primary-color, 0.05);
+    border: 1px solid rgba($primary-color, 0.15);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: $font-size-sm;
+
+    p {
+      margin: 0.4rem 0;
+      color: $text-secondary;
+
+      &:first-child {
+        font-weight: 600;
+        color: $primary-color;
+        margin-bottom: 0.6rem;
+      }
+    }
+  }
+
+  .form-content {
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      margin-top: 0;
+
+      .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+
+        input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          appearance: none;
+          -webkit-appearance: none;
+          border: 1.5px solid $text-primary;
+          background-color: $bg-primary;
+          border-radius: 3px;
+          cursor: pointer;
+          position: relative;
+          transition: all 0.2s ease;
+
+          &:checked {
+            background-color: $primary-color;
+            border-color: $primary-color;
+            accent-color: $primary-color;
+            
+            &::after {
+              content: "✓";
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              color: white;
+              font-size: 12px;
+              font-weight: bold;
+            }
+          }
+        }
+
+        .checkbox-label {
+          font-size: 10px;
+          color: $text-primary;
+          user-select: none;
+        }
+      }
+
+      .forgot-password {
+        font-size: 10px;
+        color: #ef4444;
+        text-decoration: none;
+        cursor: pointer;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .auth-buttons-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 0;
+      margin-bottom: 0;
+
+      .btn {
+        flex: 1;
+        height: 50px !important;
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+      }
+    }
+
+    .btn--primary {
+      height: 50px !important;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .signup-link {
+      .btn--accent {
+        height: 50px !important;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+
+  }
+}
+
+/* SIGNUP FORM 특수 스타일 */
+.signup-form {
+  max-width: 56rem;
+  width: 100%;
+  
+  .form-header {
+    margin-bottom: 2rem;
+    
+    .back-button {
+      font-size: 13px;
+      margin-bottom: 1.2rem;
+    }
+    
+    .form-title {
+      font-size: 34px;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      line-height: 1.2;
+    }
+
+    .form-subtitle {
+      font-size: 12px;
+      color: $text-secondary;
+      line-height: 1.5;
+    }
+  }
+
+  .form-content {
+    /* 2열 그리드 레이아웃 */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 1.4rem;
+
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+        gap: 1.6rem;
+        
+        .form-group {
+          margin-bottom: 0;
+        }
+      }
+
+      .form-group {
+        margin-bottom: 0;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1.4rem;
+
+      &.full-width {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .form-options {
+      margin-top: 1.5rem;
+      margin-bottom: 1.2rem;
+
+      .checkbox-wrapper {
+        .checkbox-label {
+          font-size: 10px;
+          color: $text-primary;
+          user-select: none;
+        }
+      }
+    }
+
+    .btn--primary {
+      height: 50px !important;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .btn--accent {
+      height: 50px !important;
+      margin-bottom: 1.6rem;
+    }
+
+    .divider {
+      margin: 2rem 0;
+    }
+
+    .social-login {
+      margin-top: 0;
+    }
+  }
+}

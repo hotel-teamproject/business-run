@@ -137,3 +137,66 @@ exports.getStatistics = async (req, res) => {
   }
 };
 
+// GET /business/statistics/revenue/chart
+exports.getRevenueChart = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { period = 'month' } = req.query; // month, week, year
+    
+    const myHotels = await Hotel.find({ ownerId: userId }).select('_id');
+    const hotelIds = myHotels.map(h => h._id);
+    
+    if (hotelIds.length === 0) {
+      return res.json({
+        success: true,
+        data: []
+      });
+    }
+    
+    let groupFormat;
+    let dateFilter = {};
+    
+    if (period === 'month') {
+      groupFormat = { $dateToString: { format: '%Y-%m', date: '$createdAt' } };
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - 12);
+      dateFilter.createdAt = { $gte: startDate };
+    } else if (period === 'week') {
+      groupFormat = { $dateToString: { format: '%Y-%U', date: '$createdAt' } };
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 12 * 7);
+      dateFilter.createdAt = { $gte: startDate };
+    } else {
+      groupFormat = { $dateToString: { format: '%Y', date: '$createdAt' } };
+      const startDate = new Date();
+      startDate.setFullYear(startDate.getFullYear() - 5);
+      dateFilter.createdAt = { $gte: startDate };
+    }
+    
+    const chartData = await Booking.aggregate([
+      {
+        $match: {
+          hotelId: { $in: hotelIds },
+          status: { $ne: 'cancelled' },
+          ...dateFilter
+        }
+      },
+      {
+        $group: {
+          _id: groupFormat,
+          revenue: { $sum: '$totalPrice' },
+          bookings: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+    
+    res.json({
+      success: true,
+      data: chartData
+    });
+  } catch (error) {
+    res.status(500).json({ message: '차트 데이터 조회 실패', error: error.message });
+  }
+};
+

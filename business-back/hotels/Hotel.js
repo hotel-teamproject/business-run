@@ -10,6 +10,9 @@ const hotelSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  nameEn: {
+    type: String
+  },
   address: {
     type: String,
     required: true
@@ -17,6 +20,16 @@ const hotelSchema = new mongoose.Schema({
   city: {
     type: String,
     required: true
+  },
+  country: {
+    type: String,
+    default: '대한민국'
+  },
+  phone: {
+    type: String
+  },
+  email: {
+    type: String
   },
   description: {
     type: String

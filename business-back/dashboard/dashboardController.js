@@ -183,11 +183,11 @@ exports.getDashboardStats = async (req, res) => {
       })),
       recentReviews: recentReviews.map(review => ({
         id: review._id.toString(),
-        authorName: review.authorName,
+        userName: review.authorName,
         hotelName: review.hotelId?.name || '',
         rating: review.rating,
-        comment: review.comment,
-        createdAt: review.createdAt
+        content: review.comment,
+        createdAt: review.createdAt ? review.createdAt.toISOString().split('T')[0] : ''
       }))
     });
   } catch (error) {

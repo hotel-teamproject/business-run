@@ -94,13 +94,13 @@ const BusinessReservationListPage = () => {
           <tbody>
             {reservations.map((reservation) => (
               <tr key={reservation._id}>
-                <td>{reservation.reservationNumber || reservation._id?.toString().slice(-8).toUpperCase() || ''}</td>
-                <td>{reservation.guestName || ''}</td>
-                <td>{reservation.hotelName || ''}</td>
-                <td>{reservation.roomName || ''}</td>
-                <td>{reservation.startDate || (reservation.checkIn ? reservation.checkIn.split('T')[0] : '')}</td>
-                <td>{reservation.endDate || (reservation.checkOut ? reservation.checkOut.split('T')[0] : '')}</td>
-                <td>{formatCurrency(reservation.totalPrice || 0)}</td>
+                <td>{reservation.reservationNumber}</td>
+                <td>{reservation.guestName}</td>
+                <td>{reservation.hotelName}</td>
+                <td>{reservation.roomName}</td>
+                <td>{reservation.startDate}</td>
+                <td>{reservation.endDate}</td>
+                <td>{formatCurrency(reservation.totalPrice)}</td>
                 <td>
                   <StatusBadge
                     status={reservation.status}

@@ -12,6 +12,8 @@ const BusinessReviewDetailPage = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [replyContent, setReplyContent] = useState("");
+  const [isEditingReply, setIsEditingReply] = useState(false);
+  const [replyingTo, setReplyingTo] = useState(null);
 
   useEffect(() => {
     fetchReview();
@@ -23,6 +25,8 @@ const BusinessReviewDetailPage = () => {
       const data = await businessReviewApi.getReviewById(reviewId);
       setReview(data);
       setReplyContent(data.reply?.content || "");
+      setIsEditingReply(false);
+      setReplyingTo(null);
     } catch (err) {
       setError(err.message || "리뷰 정보를 불러오는데 실패했습니다.");
     } finally {
@@ -39,11 +43,39 @@ const BusinessReviewDetailPage = () => {
 
     setSaving(true);
     try {
-      await businessReviewApi.replyToReview(reviewId, replyContent);
-      alert("답변이 작성되었습니다.");
+      if (isEditingReply) {
+        await businessReviewApi.updateReply(reviewId, replyContent);
+        alert("답변이 수정되었습니다.");
+      } else {
+        await businessReviewApi.replyToReview(reviewId, replyContent);
+        alert("답변이 작성되었습니다.");
+      }
       fetchReview();
     } catch (err) {
-      alert(err.message || "답변 작성에 실패했습니다.");
+      alert(err.message || (isEditingReply ? "답변 수정에 실패했습니다." : "답변 작성에 실패했습니다."));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleReplyEdit = () => {
+    setIsEditingReply(true);
+    setReplyingTo(reviewId);
+    setReplyContent(review.reply?.content || "");
+  };
+
+  const handleReplyDelete = async () => {
+    if (!window.confirm("정말 답변을 삭제하시겠습니까?")) {
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await businessReviewApi.deleteReply(reviewId);
+      alert("답변이 삭제되었습니다.");
+      fetchReview();
+    } catch (err) {
+      alert(err.message || "답변 삭제에 실패했습니다.");
     } finally {
       setSaving(false);
     }
@@ -92,17 +124,37 @@ const BusinessReviewDetailPage = () => {
           </div>
         </div>
 
-        {review.reply ? (
+        {/* 답변이 있고 내용이 있을 때만 답변 섹션 표시 */}
+        {review.reply && review.reply.content && review.reply.content.trim() && !isEditingReply && (
           <div className="reply-section">
             <h3>사업자 답변</h3>
             <div className="reply-card">
               <p>{review.reply.content}</p>
               <span className="reply-date">{review.reply.createdAt}</span>
             </div>
+            <div className="reply-actions">
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={handleReplyEdit}
+                disabled={saving}
+              >
+                수정
+              </button>
+              <button
+                className="btn btn-sm btn-outline btn-danger"
+                onClick={handleReplyDelete}
+                disabled={saving}
+              >
+                삭제
+              </button>
+            </div>
           </div>
-        ) : (
+        )}
+
+        {/* 답변 작성/수정 폼: 수정 중이거나 답변 작성 버튼을 클릭했을 때만 표시 */}
+        {isEditingReply || (replyingTo === reviewId) ? (
           <div className="reply-section">
-            <h3>답변 작성</h3>
+            <h3>{isEditingReply ? "답변 수정" : "답변 작성"}</h3>
             <form onSubmit={handleReplySubmit}>
               <textarea
                 value={replyContent}
@@ -112,12 +164,40 @@ const BusinessReviewDetailPage = () => {
                 required
               />
               <div className="form-actions">
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={() => {
+                    setIsEditingReply(false);
+                    setReplyingTo(null);
+                    setReplyContent(review.reply?.content || "");
+                  }}
+                  disabled={saving}
+                >
+                  취소
+                </button>
                 <button type="submit" className="btn btn-primary" disabled={saving}>
-                  {saving ? "저장 중..." : "답변 작성"}
+                  {saving ? "저장 중..." : (isEditingReply ? "수정 완료" : "답변 작성")}
                 </button>
               </div>
             </form>
           </div>
+        ) : (
+          /* 답변이 없을 때만 "답변 작성" 버튼 표시 */
+          (!review.reply || !review.reply.content || !review.reply.content.trim()) && (
+            <div className="reply-section">
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setReplyingTo(reviewId);
+                  setReplyContent("");
+                  setIsEditingReply(false);
+                }}
+              >
+                답변 작성하기
+              </button>
+            </div>
+          )
         )}
 
         <div className="review-actions-section">

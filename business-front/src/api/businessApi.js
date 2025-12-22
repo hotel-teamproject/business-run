@@ -123,6 +123,26 @@ export const businessAuthApi = {
       () => mockBusinessAuthApi.applyBusiness(data)
     );
   },
+
+  changePassword: async (currentPassword, newPassword) => {
+    return apiCall(
+      () => realBusinessAuthApi.changePassword(currentPassword, newPassword),
+      async () => {
+        await delay();
+        return createResponse({ success: true, message: "비밀번호가 변경되었습니다." });
+      }
+    );
+  },
+
+  forgotPassword: async (email) => {
+    return apiCall(
+      () => realBusinessAuthApi.forgotPassword(email),
+      async () => {
+        await delay();
+        return createResponse({ success: true, message: "비밀번호 재설정 요청이 접수되었습니다." });
+      }
+    );
+  },
 };
 
 // Mock 사업자 대시보드 API
@@ -130,6 +150,18 @@ const mockBusinessDashboardApi = {
   getDashboardStats: async () => {
     await delay();
     return createResponse(mockBusinessDashboardStats);
+  },
+
+  getRevenueChart: async (params = {}) => {
+    await delay();
+    return createResponse({
+      success: true,
+      data: [
+        { _id: "2024-01", revenue: 2000000, bookings: 35 },
+        { _id: "2024-02", revenue: 2500000, bookings: 42 },
+        { _id: "2024-03", revenue: 2200000, bookings: 38 },
+      ],
+    });
   },
 };
 
@@ -139,6 +171,13 @@ export const businessDashboardApi = {
     return apiCall(
       () => realBusinessDashboardApi.getDashboardStats(),
       () => mockBusinessDashboardApi.getDashboardStats()
+    );
+  },
+
+  getRevenueChart: async (params = {}) => {
+    return apiCall(
+      () => realBusinessDashboardApi.getRevenueChart(params),
+      () => mockBusinessDashboardApi.getRevenueChart(params)
     );
   },
 };
@@ -500,6 +539,25 @@ const mockBusinessReviewApi = {
     });
   },
 
+  updateReply: async (reviewId, replyContent) => {
+    await delay();
+    return createResponse({
+      message: "답변이 수정되었습니다.",
+      reply: {
+        content: replyContent,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+  },
+
+  deleteReply: async (reviewId) => {
+    await delay();
+    return createResponse({
+      message: "답변이 삭제되었습니다.",
+    });
+  },
+
   reportReview: async (reviewId, reason, content) => {
     await delay();
     return createResponse({
@@ -528,6 +586,20 @@ export const businessReviewApi = {
     return apiCall(
       () => realBusinessReviewApi.replyToReview(reviewId, replyContent),
       () => mockBusinessReviewApi.replyToReview(reviewId, replyContent)
+    );
+  },
+
+  updateReply: async (reviewId, replyContent) => {
+    return apiCall(
+      () => realBusinessReviewApi.updateReply(reviewId, replyContent),
+      () => mockBusinessReviewApi.updateReply(reviewId, replyContent)
+    );
+  },
+
+  deleteReply: async (reviewId) => {
+    return apiCall(
+      () => realBusinessReviewApi.deleteReply(reviewId),
+      () => mockBusinessReviewApi.deleteReply(reviewId)
     );
   },
 

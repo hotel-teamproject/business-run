@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { businessSettlementApi } from "../../api/businessApi";
 import Loader from "../../components/common/Loader";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import StatusBadge from "../../components/common/StatusBadge";
 
 const BusinessSettlementPage = () => {
+  const navigate = useNavigate();
   const [settlements, setSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -78,6 +80,14 @@ const BusinessSettlementPage = () => {
                   <label>지급 예정일</label>
                   <span>{settlement.paymentDate}</span>
                 </div>
+              </div>
+              <div className="settlement-actions">
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => navigate(`/business/settlements/${settlement._id}`)}
+                >
+                  상세보기
+                </button>
               </div>
             </div>
           ))}

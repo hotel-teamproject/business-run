@@ -24,12 +24,30 @@ export const realBusinessAuthApi = {
     const response = await axiosClient.post("/business/auth/apply", data);
     return response;
   },
+
+  changePassword: async (currentPassword, newPassword) => {
+    const response = await axiosClient.put("/business/auth/password", {
+      currentPassword,
+      newPassword,
+    });
+    return response;
+  },
+
+  forgotPassword: async (email) => {
+    const response = await axiosClient.post("/business/auth/forgot-password", { email });
+    return response;
+  },
 };
 
 // 사업자 대시보드 API
 export const realBusinessDashboardApi = {
   getDashboardStats: async () => {
     const response = await axiosClient.get("/business/dashboard/stats");
+    return response;
+  },
+
+  getRevenueChart: async (params = {}) => {
+    const response = await axiosClient.get("/business/dashboard/chart", { params });
     return response;
   },
 };
@@ -123,7 +141,7 @@ export const realBusinessReservationApi = {
   },
 
   updateReservationStatus: async (reservationId, status) => {
-    const response = await axiosClient.patch(`/business/reservations/${reservationId}/status`, { status });
+    const response = await axiosClient.put(`/business/reservations/${reservationId}/status`, { status });
     return response;
   },
 
@@ -147,6 +165,16 @@ export const realBusinessReviewApi = {
 
   replyToReview: async (reviewId, replyContent) => {
     const response = await axiosClient.post(`/business/reviews/${reviewId}/reply`, { content: replyContent });
+    return response;
+  },
+
+  updateReply: async (reviewId, replyContent) => {
+    const response = await axiosClient.put(`/business/reviews/${reviewId}/reply`, { content: replyContent });
+    return response;
+  },
+
+  deleteReply: async (reviewId) => {
+    const response = await axiosClient.delete(`/business/reviews/${reviewId}/reply`);
     return response;
   },
 

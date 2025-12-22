@@ -35,12 +35,20 @@ export const BusinessAuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await businessAuthApi.login(credentials);
+      
+      // 응답 검증
+      if (!response || !response.token) {
+        throw new Error("로그인 응답에 토큰이 없습니다.");
+      }
+      
       setToken(response.token);
       setBusinessInfo(response.user);
       localStorage.setItem("business_token", response.token);
       return response;
     } catch (error) {
-      throw error;
+      // 에러 메시지 추출
+      const errorMessage = error.response?.data?.message || error.message || "로그인에 실패했습니다.";
+      throw new Error(errorMessage);
     }
   };
 

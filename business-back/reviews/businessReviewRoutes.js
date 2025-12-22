@@ -9,6 +9,9 @@ router.use(verifyToken, authorize('business'));
 router.get('/', businessReviewController.getReviews);
 router.get('/:id', businessReviewController.getReviewById);
 router.post('/:id/reply', businessReviewController.replyToReview);
+router.put('/:id/reply', businessReviewController.updateReply);
+router.delete('/:id/reply', businessReviewController.deleteReply);
+router.post('/:id/report', businessReviewController.reportReview);
 
 module.exports = router;
 

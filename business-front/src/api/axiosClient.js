@@ -33,11 +33,20 @@ axiosClient.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    // 401 에러 처리 (로그인 페이지로 리다이렉트는 로그인 실패 시에는 하지 않음)
     if (error.response?.status === 401) {
-      localStorage.removeItem("business_token");
-      window.location.href = "/business/login";
+      // 로그인 페이지가 아닐 때만 리다이렉트
+      if (!window.location.pathname.includes('/login')) {
+        localStorage.removeItem("business_token");
+        window.location.href = "/business/login";
+      }
     }
-    return Promise.reject(error);
+    
+    // 에러 메시지가 있으면 그대로 전달, 없으면 기본 메시지
+    const errorMessage = error.response?.data?.message || error.message || "요청 처리 중 오류가 발생했습니다.";
+    const customError = new Error(errorMessage);
+    customError.response = error.response;
+    return Promise.reject(customError);
   }
 );
 

@@ -109,7 +109,8 @@ body {
   border: 1px solid $border-color;
 }
 
-table {
+// .data-table이 아닌 일반 table에만 적용
+table:not(.data-table) {
   width: 100%;
   border-collapse: collapse;
 

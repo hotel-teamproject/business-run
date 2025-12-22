@@ -19,6 +19,9 @@ const roomSchema = new mongoose.Schema({
     required: true,
     min: 1
   },
+  roomSize: {
+    type: String
+  },
   description: {
     type: String
   },

@@ -18,6 +18,9 @@ router.put('/password', verifyToken, authorize('business', 'admin'), authControl
 // 비밀번호 재설정 요청
 router.post('/forgot-password', authController.forgotPassword);
 
+// 사업자 신청 (회원가입)
+router.post('/apply', authController.applyBusiness);
+
 module.exports = router;
 
 

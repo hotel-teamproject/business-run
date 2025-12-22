@@ -7,6 +7,7 @@ const settlementController = require('./settlementController');
 router.use(verifyToken, authorize('business'));
 
 router.get('/', settlementController.getSettlements);
+router.get('/:id', settlementController.getSettlementById);
 
 module.exports = router;
 
